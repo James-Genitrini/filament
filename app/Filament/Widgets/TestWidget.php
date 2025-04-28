@@ -16,8 +16,8 @@ class TestWidget extends BaseWidget
 
     protected function getStats(): array
     {
-        $startDate = $this->filters['startDate'];
-        $endDate = $this->filters['endDate'];
+        $startDate = $this->filters['startDate'] ?? null;
+        $endDate = $this->filters['endDate'] ?? null;
 
         return [
             Stat::make('New Users',

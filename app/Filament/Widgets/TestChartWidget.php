@@ -15,8 +15,8 @@ class TestChartWidget extends ChartWidget
 
     protected function getData(): array
     {
-        $startDate = $this->filters['startDate'];
-        $endDate = $this->filters['endDate'];
+        $startDate = $this->filters['startDate'] ?? null;
+        $endDate = $this->filters['endDate'] ?? null;
 
         $data = Trend::model(User::class)
             ->between(start: $startDate ? Carbon::parse($startDate) : now()->subMonths(6), end: $endDate ? Carbon::parse($endDate) : now())
