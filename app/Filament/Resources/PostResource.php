@@ -4,10 +4,12 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\PostResource\Pages;
 use App\Filament\Resources\PostResource\RelationManagers;
+use App\Filament\Resources\PostResource\RelationManagers\AuthorsRelationManager;
 use App\Models\Category;
 use App\Models\Post;
 use Filament\Forms;
 use Filament\Forms\Components\Checkbox;
+use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Group;
@@ -86,16 +88,17 @@ class PostResource extends Resource
                             ->label('Published')
                     ]),
 
-                    Section::make('Authors')->schema([
-                        Select::make('authors')
-                            ->relationship('authors', 'name')
-                            ->multiple()
-                            ->preload()
-                            ->searchable()
-                            ->label('Authors')
-                            ->placeholder('Select authors')
-                            ->columnSpan(2)
-                    ])
+                    // Section::make('Authors')->schema([
+                    //     Select::make('authors')
+                    //         ->label('Co-authors')
+                    //         ->relationship('authors', 'name')
+                    //         ->multiple()
+                    //         ->preload()
+                    //         ->searchable()
+                    //         ->label('Authors')
+                    //         ->placeholder('Select authors')
+                    //         ->columnSpan(2),
+                    // ])
                     
                 ])
                 
@@ -163,7 +166,7 @@ class PostResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            AuthorsRelationManager::class,
         ];
     }
 

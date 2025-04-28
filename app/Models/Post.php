@@ -29,7 +29,7 @@ class Post extends Model
     }
 
     public function authors(){
-        return $this->belongsToMany(User::class, 'post_users')->withTimestamps();
+        return $this->belongsToMany(User::class, 'post_users')->withPivot(['order'])->withTimestamps();
     }
 
 }

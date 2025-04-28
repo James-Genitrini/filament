@@ -79,16 +79,16 @@ class PostsRelationManager extends RelationManager
                             ->label('Published')
                     ]),
 
-                    Section::make('Authors')->schema([
-                        Select::make('authors')
-                            ->relationship('authors', 'name')
-                            ->multiple()
-                            ->preload()
-                            ->searchable()
-                            ->label('Authors')
-                            ->placeholder('Select authors')
-                            ->columnSpan(2)
-                    ])
+                    // Section::make('Authors')->schema([
+                    //     Select::make('authors')
+                    //         ->relationship('authors', 'name')
+                    //         ->multiple()
+                    //         ->preload()
+                    //         ->searchable()
+                    //         ->label('Authors')
+                    //         ->placeholder('Select authors')
+                    //         ->columnSpan(2)
+                    // ])
                     
                 ])
                 
