@@ -1,12 +1,18 @@
 <?php
 
-namespace App\Filament\Resources;
+namespace App\Filament\Resources\CategoryResource\RelationManagers;
 
+use Filament\Forms;
+use Filament\Forms\Form;
+use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Tables;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\PostResource\Pages;
 use App\Filament\Resources\PostResource\RelationManagers;
 use App\Models\Category;
 use App\Models\Post;
-use Filament\Forms;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\FileUpload;
@@ -17,24 +23,17 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\ToggleButtons;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Tables;
 use Filament\Tables\Columns\CheckboxColumn;
 use Filament\Tables\Columns\ColorColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class PostResource extends Resource
+class PostsRelationManager extends RelationManager
 {
-    protected static ?string $model = Post::class;
+    protected static string $relationship = 'posts';
 
-    protected static ?string $navigationIcon = 'heroicon-o-chat-bubble-left-right';
-
-    public static function form(Form $form): Form
+    public function form(Form $form): Form
     {
         return $form
             ->schema([
@@ -50,12 +49,6 @@ class PostResource extends Resource
                         ->required()
                         ->maxLength(255)
                         ->unique(ignoreRecord: true),
-
-                    Select::make('category_id')
-                        ->label('Category')
-                        ->relationship('category', 'name')
-                        ->searchable()
-                        ->required(),
                     
                     ColorPicker::make('color')
                         ->label('Color')
@@ -99,55 +92,32 @@ class PostResource extends Resource
                     
                 ])
                 
-            ])->columns(3);
+        ])->columns(3);
+
     }
 
-    public static function table(Table $table): Table
+    public function table(Table $table): Table
     {
         return $table
+            ->recordTitleAttribute('title')
             ->columns([
-                TextColumn::make('id')
-                    ->label('ID')
-                    ->sortable()
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                ImageColumn::make('thumbnail')
-                    ->toggleable(),
-                TextColumn::make('title')
+                Tables\Columns\TextColumn::make('title')
                     ->label('Title')
                     ->sortable()
-                    ->searchable()
-                    ->toggleable(),
-                TextColumn::make('slug')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('slug')
                     ->label('Slug')
                     ->sortable()
-                    ->searchable()
-                    ->toggleable(),
-                TextColumn::make('category.name')
-                    ->label('Category')
-                    ->sortable()
-                    ->searchable()
-                    ->toggleable(),
-                ColorColumn::make('color')
-                    ->label('Color')
-                    ->toggleable(),
-                TextColumn::make('tags')
-                    ->label('Tags')
-                    ->sortable()
-                    ->searchable()
-                    ->toggleable(),
-                CheckboxColumn::make('published')
+                    ->searchable(),
+                Tables\Columns\CheckboxColumn::make('published')
                     ->label('Published')
                     ->sortable(),
-                TextColumn::make('created_at')
-                    ->label('Published At')
-                    ->dateTime()
-                    ->sortable()
-                    ->searchable()
-                    ->toggleable(),
             ])
             ->filters([
                 //
+            ])
+            ->headerActions([
+                Tables\Actions\CreateAction::make(),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
@@ -158,21 +128,5 @@ class PostResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
-    }
-
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
-    }
-
-    public static function getPages(): array
-    {
-        return [
-            'index' => Pages\ListPosts::route('/'),
-            'create' => Pages\CreatePost::route('/create'),
-            'edit' => Pages\EditPost::route('/{record}/edit'),
-        ];
     }
 }
