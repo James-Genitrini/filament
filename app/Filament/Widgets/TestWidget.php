@@ -5,15 +5,28 @@ namespace App\Filament\Widgets;
 use App\Models\Comment;
 use App\Models\Post;
 use App\Models\User;
+use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
+use Illuminate\Database\Eloquent\Builder;
 
 class TestWidget extends BaseWidget
 {
+    use InteractsWithPageFilters;
+
     protected function getStats(): array
     {
+        $startDate = $this->filters['startDate'];
+        $endDate = $this->filters['endDate'];
+
         return [
-            Stat::make('New Users', User::count())
+            Stat::make('New Users',
+        User::
+                when($startDate,
+                fn (Builder $query) => $query->whereDate('created_at', '>', $startDate))
+                ->when($endDate, fn (Builder $query) => $query->whereDate('created_at', '<', $endDate))
+                ->count()
+                )
                 ->description('New users in the last 30 days')
                 ->color('success')
                 ->icon('heroicon-o-user')
