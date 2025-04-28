@@ -10,7 +10,9 @@ use Filament\Forms;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Group;
 use Filament\Forms\Components\MarkdownEditor;
+use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\TextInput;
@@ -36,81 +38,109 @@ class PostResource extends Resource
     {
         return $form
             ->schema([
-                TextInput::make('title')
-                    ->label('Title')
-                    ->required()
-                    ->maxLength(255),
+                Section::make('Post Details')->schema([
 
-                TextInput::make('slug')
-                    ->label('Slug')
-                    ->required()
-                    ->maxLength(255),
+                    TextInput::make('title')
+                        ->label('Title')
+                        ->required()
+                        ->maxLength(255),
 
-                Select::make('category_id')
-                    ->label('Category')
-                    ->searchable()
-                    ->options(Category::all()->pluck('name', 'id')),
+                    TextInput::make('slug')
+                        ->label('Slug')
+                        ->required()
+                        ->maxLength(255)
+                        ->unique(ignoreRecord: true),
 
-                ColorPicker::make('color')
-                    ->label('Color')
-                    ->required()
-                    ->default('#000000'),
+                    Select::make('category_id')
+                        ->label('Category')
+                        ->searchable()
+                        ->required()
+                        ->options(Category::all()->pluck('name', 'id')),
 
-                FileUpload::make('thumbnail')
-                    ->disk('public')
-                    ->directory('thumbnails'),
+                    ColorPicker::make('color')
+                        ->label('Color')
+                        ->required()
+                        ->default('#000000'),
 
+                    MarkdownEditor::make('content')
+                        ->label('Content')
+                        ->required()
+                        ->columnSpanFull(),
+                ])->columnSpan(2)->columns(2),
 
-                MarkdownEditor::make('content')
-                    ->label('Content')
-                    ->required()
-                    ->columnSpanFull(),
-                TagsInput::make('tags')
-                    ->label('Tags')
-                    ->placeholder('Enter tags')
-                    ->columnSpanFull(),
-                Checkbox::make('published')
-                    ->label('Published')
-                    ->required()
+                Group::make()->schema([
+                    Section::make('Image')->collapsible()->schema([
+                        FileUpload::make('thumbnail')
+                            ->disk('public')
+                            ->directory('thumbnails')
+                    ])->columnSpan(1),
+
+                        
+                    Section::make('Post Options')->schema([
+                        TagsInput::make('tags')
+                        ->label('Tags')
+                        ->required()
+                        ->placeholder('Enter tags'),
+
+                        Checkbox::make('published')
+                            ->label('Published')
+                    ])
+                    
+                ])
                 
-            ]);
+            ])->columns(3);
     }
 
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
-                ImageColumn::make('thumbnail'),
+                TextColumn::make('id')
+                    ->label('ID')
+                    ->sortable()
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                ImageColumn::make('thumbnail')
+                    ->toggleable(),
                 TextColumn::make('title')
                     ->label('Title')
                     ->sortable()
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(),
                 TextColumn::make('slug')
                     ->label('Slug')
                     ->sortable()
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(),
                 TextColumn::make('category.name')
                     ->label('Category')
                     ->sortable()
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(),
                 ColorColumn::make('color')
                     ->label('Color')
-                    ->sortable()
-                    ->searchable(),
+                    ->toggleable(),
                 TextColumn::make('tags')
                     ->label('Tags')
                     ->sortable()
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(),
                 CheckboxColumn::make('published')
                     ->label('Published')
+                    ->sortable(),
+                TextColumn::make('created_at')
+                    ->label('Published At')
+                    ->dateTime()
                     ->sortable()
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(),
             ])
             ->filters([
                 //
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
