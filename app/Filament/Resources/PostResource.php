@@ -16,6 +16,8 @@ use Filament\Forms\Components\Group;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Tabs;
+use Filament\Forms\Components\Tabs\Tab;
 use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\ToggleButtons;
@@ -40,67 +42,58 @@ class PostResource extends Resource
     {
         return $form
             ->schema([
-                Section::make('Post Details')->schema([
-
-                    TextInput::make('title')
+                Tabs::make('Create new post')->tabs([
+                    Tab::make('Post Details')
+                    ->icon('heroicon-o-adjustments-vertical')
+                    ->schema([
+                        TextInput::make('title')
                         ->label('Title')
                         ->required()
                         ->maxLength(255),
 
-                    TextInput::make('slug')
-                        ->label('Slug')
-                        ->required()
-                        ->maxLength(255)
-                        ->unique(ignoreRecord: true),
+                        TextInput::make('slug')
+                            ->label('Slug')
+                            ->required()
+                            ->maxLength(255)
+                            ->unique(ignoreRecord: true),
 
-                    Select::make('category_id')
-                        ->label('Category')
-                        ->relationship('category', 'name')
-                        ->searchable()
-                        ->required(),
-                    
-                    ColorPicker::make('color')
-                        ->label('Color')
-                        ->required()
-                        ->default('#000000'),
-
-                    MarkdownEditor::make('content')
-                        ->label('Content')
-                        ->required()
-                        ->columnSpanFull(),
-                ])->columnSpan(2)->columns(2),
-
-                Group::make()->schema([
-                    Section::make('Image')->collapsible()->schema([
+                        Select::make('category_id')
+                            ->label('Category')
+                            ->relationship('category', 'name')
+                            ->searchable()
+                            ->required(),
+                        
+                        ColorPicker::make('color')
+                            ->label('Color')
+                            ->required()
+                            ->default('#000000'),
+                    ]),
+                    Tab::make('Content')
+                    ->icon('heroicon-o-document-text')
+                    ->schema([
+                        MarkdownEditor::make('content')
+                            ->label('Content')
+                            ->required()
+                            ->columnSpanFull(),
+                    ]),
+                    Tab::make('Meta')
+                    ->icon('heroicon-o-archive-box-arrow-down')
+                    ->schema([
                         FileUpload::make('thumbnail')
                             ->disk('public')
-                            ->directory('thumbnails')
-                    ])->columnSpan(1),
+                            ->directory('thumbnails'),
 
-                        
-                    Section::make('Post Options')->schema([
                         TagsInput::make('tags')
-                        ->label('Tags')
-                        ->required()
-                        ->placeholder('Enter tags'),
+                            ->label('Tags')
+                            ->required()
+                            ->placeholder('Enter tags'),
 
                         Checkbox::make('published')
                             ->label('Published')
-                    ]),
-
-                    // Section::make('Authors')->schema([
-                    //     Select::make('authors')
-                    //         ->label('Co-authors')
-                    //         ->relationship('authors', 'name')
-                    //         ->multiple()
-                    //         ->preload()
-                    //         ->searchable()
-                    //         ->label('Authors')
-                    //         ->placeholder('Select authors')
-                    //         ->columnSpan(2),
-                    // ])
-                    
-                ])
+                    ])
+                ])->columnSpanFull()
+                // ->activeTab(3)
+                ->persistTabInQueryString(),
                 
             ])->columns(3);
     }
