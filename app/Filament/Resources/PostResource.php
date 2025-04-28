@@ -28,6 +28,9 @@ use Filament\Tables\Columns\CheckboxColumn;
 use Filament\Tables\Columns\ColorColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -143,7 +146,19 @@ class PostResource extends Resource
                     ->toggleable(),
             ])
             ->filters([
-                //
+                // Filter::make('Published Posts')->query(
+                //     fn (Builder $query) => $query->where('published', true)
+                // ),
+                // Filter::make('Unpublished Posts')->query(
+                //     fn (Builder $query) => $query->where('published', false)
+                // ),
+                TernaryFilter::make('published'),
+                SelectFilter::make('category_id')
+                    ->label('Category')
+                    ->relationship('category', 'name')
+                    ->searchable()
+                    ->preload()
+                    ->multiple(),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
