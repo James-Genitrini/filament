@@ -22,6 +22,8 @@ class CategoryResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-folder';
     protected static ?string $modelLabel = 'Post Categories';
+    protected static ?string $navigationGroup = 'Blog';
+    protected static ?string $navigationParentItem = 'Posts';
 
     public static function form(Form $form): Form
     {
@@ -29,6 +31,13 @@ class CategoryResource extends Resource
             ->schema([
                 TextInput::make('name')
                     ->label('Name')
+                    ->live(onBlur: true)
+                    ->afterStateUpdated(function (string $operation, callable $set, $state) {
+                        if($operation === 'edit') {
+                            return;
+                        }
+                        $set('slug', str($state)->slug());
+                    })
                     ->required()
                     ->maxLength(255),
                 TextInput::make('slug')
