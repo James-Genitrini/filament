@@ -7,4 +7,6 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/posts', [PostController::class, 'index'])->name('posts.index');
+
 Route::get('post/{slug}', [PostController::class, 'show'])->name('post.show');

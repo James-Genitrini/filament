@@ -7,6 +7,13 @@ use Illuminate\Http\Request;
 
 class PostController extends Controller
 {
+    public function index()
+    {
+        $posts = Post::where('published', true)->get();
+        
+        return view('index', compact('posts'));
+    }
+
     public function show($slug)
     {
         $post = Post::where('slug', $slug)->firstOrFail();
