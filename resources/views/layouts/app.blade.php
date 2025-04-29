@@ -12,8 +12,8 @@
     <header>
         <nav>
             <ul>
-                <li><a href="{{ url('/posts') }}">Accueil</a></li>
-                {{-- <li><a href="{{ route('post.show', ['slug' => 'exemple']) }}">Exemple de Post</a></li> --}}
+                <li><a href="{{ url('/') }}">Accueil</a></li>
+                <li><a href="{{ url('/admin') }}">Admin</a></li>
             </ul>
         </nav>
     </header>
