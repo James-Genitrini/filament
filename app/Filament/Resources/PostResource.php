@@ -35,6 +35,8 @@ use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
+use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
 
 class PostResource extends Resource
 {
@@ -56,7 +58,14 @@ class PostResource extends Resource
                         TextInput::make('title')
                         ->label('Title')
                         ->required()
-                        ->maxLength(255),
+                        ->maxLength(255)
+                        ->live(onBlur: true)
+                        ->afterStateUpdated(function (string $operation, callable $set, $state) {
+                        if($operation === 'edit') {
+                            return;
+                        }
+                        $set('slug', str($state)->slug());
+                        }),
 
                         TextInput::make('slug')
                             ->label('Slug')
@@ -86,10 +95,8 @@ class PostResource extends Resource
                     Tab::make('Meta')
                     ->icon('heroicon-o-archive-box-arrow-down')
                     ->schema([
-                        FileUpload::make('thumbnail')
-                            ->disk('public')
-                            ->directory('thumbnails'),
-
+                        SpatieMediaLibraryFileUpload::make('thumbnail')
+                            ->label('Thumbnail'),
                         TagsInput::make('tags')
                             ->label('Tags')
                             ->required()
@@ -114,7 +121,9 @@ class PostResource extends Resource
                     ->sortable()
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                ImageColumn::make('thumbnail')
+                TextColumn::make('thumbnail')
+                    ->label('Thumbnail')
+                    ->getStateUsing(fn($record) => $record->getFirstMediaUrl('thumbnail', 'preview'))
                     ->toggleable(),
                 TextColumn::make('title')
                     ->label('Title')
