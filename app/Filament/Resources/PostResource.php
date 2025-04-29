@@ -96,7 +96,10 @@ class PostResource extends Resource
                     ->icon('heroicon-o-archive-box-arrow-down')
                     ->schema([
                         SpatieMediaLibraryFileUpload::make('thumbnail')
-                            ->label('Thumbnail'),
+                            ->label('Thumbnail')
+                            ->multiple()
+                            ->reorderable()
+                            ->collection('thumbnail'),
                         TagsInput::make('tags')
                             ->label('Tags')
                             ->required()
@@ -121,10 +124,15 @@ class PostResource extends Resource
                     ->sortable()
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('thumbnail')
+                ImageColumn::make('thumbnail')
                     ->label('Thumbnail')
                     ->getStateUsing(fn($record) => $record->getFirstMediaUrl('thumbnail', 'preview'))
                     ->toggleable(),
+                // SpatieMediaLibraryImageColumn::make('thumbnail')
+                //     ->label('Thumbnail')
+                //     ->collection('thumbnail')
+                //     ->conversion('preview')
+                //     ->toggleable(),
                 TextColumn::make('title')
                     ->label('Title')
                     ->sortable()

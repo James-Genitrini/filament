@@ -10,9 +10,11 @@
         </div>
 
         @if($post->hasMedia('thumbnail'))
-            <div class="thumbnail">
-                <img src="{{ $post->getFirstMediaUrl('thumbnail', 'preview') }}" alt="Thumbnail">
-            </div>
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+            @foreach($post->getMedia('thumbnail') as $media)
+                <img src="{{ $media->getUrl('preview') }}" alt="Post image" style="width: 150px; height: auto; border-radius: 8px;">
+            @endforeach
+        </div>
         @endif
     </div>
 @endsection
